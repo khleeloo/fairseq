@@ -30,6 +30,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+noisy/LibriSpeech/
+fbank80/
 
 # Checkpoints
 checkpoints
