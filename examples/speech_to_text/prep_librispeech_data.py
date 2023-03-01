@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 SPLITS = [
     # "train-clean-100",
-    "train-clean-360",
+    # "train-clean-360",
     # "train-other-500",
     "dev-clean",
     "dev-other",
@@ -46,7 +46,8 @@ def process(args):
     feature_root.mkdir(exist_ok=True)
     for split in SPLITS:
         print(f"Fetching split {split}...")
-        dataset = LIBRISPEECH(out_root.as_posix(), url=split, download=True)
+        # dataset = LIBRISPEECH(out_root.as_posix(), url=split, download=True)
+        dataset=LIBRISPEECH(root='/home/rmfrieske/datasets/perturbed',  url=split)
         print("Extracting log mel filter bank features...")
         for wav, sample_rate, _, spk_id, chapter_no, utt_no in tqdm(dataset):
             sample_id = f"{spk_id}-{chapter_no}-{utt_no}"
@@ -64,7 +65,8 @@ def process(args):
     train_text = []
     for split in SPLITS:
         manifest = {c: [] for c in MANIFEST_COLUMNS}
-        dataset = LIBRISPEECH(out_root.as_posix(), url=split)
+        # dataset = LIBRISPEECH(out_root.as_posix(), url=split)
+        dataset=LIBRISPEECH(root='/home/rmfrieske/datasets/perturbed',  url=split)
         for _, _, utt, spk_id, chapter_no, utt_no in tqdm(dataset):
             sample_id = f"{spk_id}-{chapter_no}-{utt_no}"
             manifest["id"].append(sample_id)

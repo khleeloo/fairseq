@@ -32,7 +32,7 @@ from fairseq.modules import (
     PositionalEmbedding,
     TransformerEncoderLayer,
 )
-from fairseq.scoring import sacrebleu, bleu, wer, chrf
+from fairseq.scoring import bleu, wer, chrf
 
 logger = logging.getLogger(__name__)
 
@@ -493,7 +493,7 @@ class TransformerDecoderScriptable(TransformerDecoder):
         return x, extra
 
 
-@register_model_architecture(model_name="s2t_transformer", arch_name="s2t_transformer")
+@register_model_architecture(model_name="s2t_hallucination_transformer", arch_name="s2t_hallucination_transformer")
 def base_architecture(args):
     args.encoder_freezing_updates = getattr(args, "encoder_freezing_updates", 0)
     # Convolutional subsampler
@@ -501,7 +501,7 @@ def base_architecture(args):
     args.conv_kernel_sizes = getattr(args, "conv_kernel_sizes", "5,5")  # for Conv1d
     args.conv_channels = getattr(args, "conv_channels", 1024)  # for Conv1d
     args.conv_out_channels = getattr(args, "conv_out_channels", 256)  # for Conv2d
-    args.conv_version = getattr(args, "conv_version", "s2t_transformer")
+    args.conv_version = getattr(args, "conv_version", "s2t_hallucination_transformer")
     # Transformer
     args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 512)
     args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 2048)
@@ -539,7 +539,7 @@ def base_architecture(args):
 
 
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_s")
+@register_model_architecture("s2t_hallucination_transformer", "s2t_hallucination_transformer_s")
 def s2t_transformer_s(args):
     args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 256)
     args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 256 * 8)
@@ -548,48 +548,48 @@ def s2t_transformer_s(args):
     args.dropout = getattr(args, "dropout", 0.1)
     base_architecture(args)
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_xs")
-def s2t_transformer_xs(args):
-    args.encoder_layers = getattr(args, "encoder_layers", 6)
-    args.decoder_layers = getattr(args, "decoder_layers", 3)
-    args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 256 * 4)
-    args.dropout = getattr(args, "dropout", 0.3)
-    s2t_transformer_s(args)
+# @register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_xs")
+# def s2t_transformer_xs(args):
+#     args.encoder_layers = getattr(args, "encoder_layers", 6)
+#     args.decoder_layers = getattr(args, "decoder_layers", 3)
+#     args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 256 * 4)
+#     args.dropout = getattr(args, "dropout", 0.3)
+#     s2t_transformer_s(args)
 
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_sp")
-def s2t_transformer_sp(args):
-    args.encoder_layers = getattr(args, "encoder_layers", 16)
-    s2t_transformer_s(args)
+# @register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_sp")
+# def s2t_transformer_sp(args):
+#     args.encoder_layers = getattr(args, "encoder_layers", 16)
+#     s2t_transformer_s(args)
 
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_m")
-def s2t_transformer_m(args):
-    args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 512)
-    args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 512 * 4)
-    args.encoder_attention_heads = getattr(args, "encoder_attention_heads", 8)
-    args.decoder_attention_heads = getattr(args, "decoder_attention_heads", 8)
-    args.dropout = getattr(args, "dropout", 0.15)
-    base_architecture(args)
+# @register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_m")
+# def s2t_transformer_m(args):
+#     args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 512)
+#     args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 512 * 4)
+#     args.encoder_attention_heads = getattr(args, "encoder_attention_heads", 8)
+#     args.decoder_attention_heads = getattr(args, "decoder_attention_heads", 8)
+#     args.dropout = getattr(args, "dropout", 0.15)
+#     base_architecture(args)
 
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_mp")
-def s2t_transformer_mp(args):
-    args.encoder_layers = getattr(args, "encoder_layers", 16)
-    s2t_transformer_m(args)
+# @register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_mp")
+# def s2t_transformer_mp(args):
+#     args.encoder_layers = getattr(args, "encoder_layers", 16)
+#     s2t_transformer_m(args)
 
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_l")
-def s2t_transformer_l(args):
-    args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 1024)
-    args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 1024 * 4)
-    args.encoder_attention_heads = getattr(args, "encoder_attention_heads", 16)
-    args.decoder_attention_heads = getattr(args, "decoder_attention_heads", 16)
-    args.dropout = getattr(args, "dropout", 0.2)
-    base_architecture(args)
+# @register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_l")
+# def s2t_transformer_l(args):
+#     args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 1024)
+#     args.encoder_ffn_embed_dim = getattr(args, "encoder_ffn_embed_dim", 1024 * 4)
+#     args.encoder_attention_heads = getattr(args, "encoder_attention_heads", 16)
+#     args.decoder_attention_heads = getattr(args, "decoder_attention_heads", 16)
+#     args.dropout = getattr(args, "dropout", 0.2)
+#     base_architecture(args)
 
 
-@register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_lp")
-def s2t_transformer_lp(args):
-    args.encoder_layers = getattr(args, "encoder_layers", 16)
-    s2t_transformer_l(args)
+# @register_model_architecture("s2t_hallucination_transformer", "s2t_transformer_lp")
+# def s2t_transformer_lp(args):
+#     args.encoder_layers = getattr(args, "encoder_layers", 16)
+#     s2t_transformer_l(args)
