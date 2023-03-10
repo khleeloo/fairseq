@@ -1,7 +1,7 @@
 #!/bin/bash
 MODEL=UU
-EXPERIMENT='white_noise_first'
-LS_ROOT=/home/rmfrieske/datasets/perturbed/
+EXPERIMENT=''
+LS_ROOT=/home/rmfrieske/datasets/
 FAIRSEQ=/home/rmfrieske/fairseq/
 TENSOR_LOG=/home/rmfrieske/tensor_log/${MODEL}/${EXPERIMENT}/
 

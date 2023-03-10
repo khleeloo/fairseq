@@ -319,20 +319,26 @@ class S2TTransformerModel(FairseqEncoderDecoderModel):
         decoder_out = self.decoder(
             prev_output_tokens=prev_output_tokens, encoder_out=encoder_out
         )
+        if not self.train:
+            
+            
+
         return decoder_out
     
     def hallucination_algorithm(self,scorer,tgt_tokens, tgt_hyp):
         # if scorer sacrebleu, bleu, wer, chrf
         #calculate bleau between tgt_tokens and tgt_hyp
-        adjusted_score= bleu(tgt_tokens,tgt_hyp)
-        if adjusted_score > 0.09:
-            #pipeline
-            # perturb x
-            tgt_pert_hyp=self.forward(src_perturb)
-            # calculate bleau tgt_pert_hyp - tgt_tokens
-            adjusted_score=bleu( tgt_tokens,tgt_pert_hyp)
-            if adjusted_score <0.01:
-                hallucination=tgt_pert_hyp
+        with open('filename') as f:
+            adjusted_score= bleu(tgt_tokens,tgt_hyp)
+            if adjusted_score > 0.09:
+                #pipeline
+                # perturb x
+                tgt_pert_hyp=self.forward(src_perturb)
+                # calculate bleau tgt_pert_hyp - tgt_tokens
+                adjusted_score=bleu( tgt_tokens,tgt_pert_hyp)
+                if adjusted_score <0.01:
+                    hallucination=tgt_pert_hyp
+                    f.write()
         return hallucination
 
 class S2TTransformerEncoder(FairseqEncoder):
