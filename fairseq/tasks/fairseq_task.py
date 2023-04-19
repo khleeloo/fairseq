@@ -81,6 +81,7 @@ class FairseqTask(object):
     def __init__(self, cfg: FairseqDataclass, **kwargs):
         self.cfg = cfg
         self.datasets = dict()
+        
         self.dataset_to_epoch_iter = dict()
         self.state = StatefulContainer()
 
@@ -163,6 +164,25 @@ class FairseqTask(object):
         if not isinstance(self.datasets[split], FairseqDataset):
             raise TypeError("Datasets are expected to be of type FairseqDataset")
         return self.datasets[split]
+    
+    # def hallucination_dataset(self, split):
+    #     """
+    #     Return a loaded dataset split.
+
+    #     Args:
+    #         split (str): name of the split (e.g., train, valid, test)
+
+    #     Returns:
+    #         a :class:`~fairseq.data.FairseqDataset` corresponding to *split*
+    #     """
+    #     from fairseq.data import FairseqDataset
+
+    #     if split not in self.hallucination_datasets:
+    #         raise KeyError("Dataset not loaded: " + split)
+    #     if not isinstance(self.hallucination_datasets[split], FairseqDataset):
+    #         raise TypeError("Datasets are expected to be of type FairseqDataset")
+    #     return self.hallucination_datasets[split]
+    
 
     def filter_indices_by_size(
         self, indices, dataset, max_positions=None, ignore_invalid_inputs=False
@@ -660,6 +680,7 @@ class LegacyFairseqTask(FairseqTask):
         super().__init__(None)
         self.args = args
         self.datasets = {}
+        
         self.dataset_to_epoch_iter = {}
 
     @classmethod
