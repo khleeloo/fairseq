@@ -147,7 +147,9 @@ def get_features_or_waveform_from_stored_zip(
 ):
     assert path.endswith(".zip")
     data = read_from_stored_zip(path, byte_offset, byte_size)
+    
     f = io.BytesIO(data)
+    print(f)
     if is_npy_data(data):
         features_or_waveform = np.load(f)
     elif is_sf_audio_data(data):
@@ -195,7 +197,7 @@ def get_features_or_waveform(
             _path, waveform_transforms=waveform_transforms
         )
     elif len(slice_ptr) == 2:
-        features_or_waveform = get_features_or_waveform_from_stored_zip(
+         features_or_waveform = get_features_or_waveform_from_stored_zip(
             _path,
             slice_ptr[0],
             slice_ptr[1],

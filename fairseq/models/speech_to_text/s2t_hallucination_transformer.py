@@ -213,26 +213,22 @@ class S2TTransformerModel(FairseqEncoderDecoderModel):
         )
         parser.add_argument(
             "--perturb-filler",
-            type=int,
-            metavar="N",
+            action="store_true",
             help="add filler",
         )
         parser.add_argument(
             "--perturb-laughter",
-            type=int,
-            metavar="N",
+            action="store_true",
             help="add laughter",
         )
         parser.add_argument(
             "--perturb-noise-1",
-            type=int,
-            metavar="N",
+            action="store_true",
             help=" add noise 1",
         )
         parser.add_argument(
             "--perturb-noise-2",
-            type=int,
-            metavar="N",
+            action="store_true",
             help=" add noise 2",
         )
         parser.add_argument(
@@ -319,7 +315,8 @@ class S2TTransformerModel(FairseqEncoderDecoderModel):
         decoder_out = self.decoder(
             prev_output_tokens=prev_output_tokens, encoder_out=encoder_out
         )
-        if not self.train:
+        # if not self.train and :rc_
+        #     self.hallucination_algorithm(tgt_tokens, tgt_hyp)
             
             
 

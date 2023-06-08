@@ -57,6 +57,8 @@ def get_symbols_to_strip_from_output(generator):
         return {generator.eos}
 
 
+
+
 def _main(cfg: DictConfig, output_file):
     logging.basicConfig(
         format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",

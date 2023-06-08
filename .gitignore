@@ -141,3 +141,4 @@ wandb/
 nohup.out
 multirun
 outputs
+*.csv

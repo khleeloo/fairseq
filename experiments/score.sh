@@ -5,7 +5,7 @@ EXPERIMENT='baseline'
 
 FAIRSEQ=/home/rmfrieske/fairseq/fairseq_cli/
 
-blue_cutoff=1
+blue_cutoff=10
 
 SAVE_DIR=/home/rmfrieske/checkpoints/${MODEL}/${EXPERIMENT}/bleu/
 export PYTHONPATH='/home/rmfrieske/fairseq/'

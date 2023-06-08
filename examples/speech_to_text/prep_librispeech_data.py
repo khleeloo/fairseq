@@ -27,12 +27,12 @@ log = logging.getLogger(__name__)
 
 SPLITS = [
     # "train-clean-100",
-    # "train-clean-360",
+    "train-clean-360",
     # "train-other-500",
-    "dev-clean",
-    "dev-other",
-    "test-clean",
-    "test-other",
+    # "dev-clean",
+    # "dev-other",
+    # "test-clean",
+    # "test-other",
 ]
 
 MANIFEST_COLUMNS = ["id", "audio", "n_frames", "tgt_text", "speaker"]
@@ -47,7 +47,7 @@ def process(args):
     for split in SPLITS:
         print(f"Fetching split {split}...")
         # dataset = LIBRISPEECH(out_root.as_posix(), url=split, download=True)
-        dataset=LIBRISPEECH(root='/home/rmfrieske/datasets/perturbed',  url=split)
+        dataset=LIBRISPEECH(root='/home/rmfrieske/datasets',  url=split)
         print("Extracting log mel filter bank features...")
         for wav, sample_rate, _, spk_id, chapter_no, utt_no in tqdm(dataset):
             sample_id = f"{spk_id}-{chapter_no}-{utt_no}"
@@ -58,7 +58,7 @@ def process(args):
     zip_path = out_root / "fbank80.zip"
     print("ZIPing features...")
     create_zip(feature_root, zip_path)
-    print("Fetching ZIP manifest...")
+    # print("Fetching ZIP manifest...")
     audio_paths, audio_lengths = get_zip_manifest(zip_path)
     # Generate TSV manifest
     print("Generating manifest...")
@@ -66,7 +66,7 @@ def process(args):
     for split in SPLITS:
         manifest = {c: [] for c in MANIFEST_COLUMNS}
         # dataset = LIBRISPEECH(out_root.as_posix(), url=split)
-        dataset=LIBRISPEECH(root='/home/rmfrieske/datasets/perturbed',  url=split)
+        dataset=LIBRISPEECH(root='/home/rmfrieske/datasets',  url=split)
         for _, _, utt, spk_id, chapter_no, utt_no in tqdm(dataset):
             sample_id = f"{spk_id}-{chapter_no}-{utt_no}"
             manifest["id"].append(sample_id)
@@ -77,8 +77,8 @@ def process(args):
         save_df_to_tsv(
             pd.DataFrame.from_dict(manifest), out_root / f"{split}.tsv"
         )
-        if split.startswith("train"):
-            train_text.extend(manifest["tgt_text"])
+    if split.startswith("train"):
+        train_text.extend(manifest["tgt_text"])
     # Generate vocab
     vocab_size = "" if args.vocab_type == "char" else str(args.vocab_size)
     spm_filename_prefix = f"spm_{args.vocab_type}{vocab_size}"
