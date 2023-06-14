@@ -54,8 +54,8 @@ class CoVoST(Dataset):
     # )
 
     # VERSIONS = {2}
-    root='/home/rmfrieske/datasets/covost/'
-    SPLITS = [ "train"]
+    root='/home/rmfrieske/datasets/covost/en/'
+    SPLITS = [ "dev"]
 
 
 
@@ -70,7 +70,7 @@ class CoVoST(Dataset):
 
         self.root = root
 
-        cv_tsv_path = '/home/rmfrieske/datasets/covost/validated.tsv'
+        cv_tsv_path = '/home/rmfrieske/datasets/covost/en/dev_covost.tsv'
         # assert cv_tsv_path.is_file()
 
         # Extract features
@@ -82,7 +82,7 @@ class CoVoST(Dataset):
 
         df= load_df_from_tsv(cv_tsv_path)
  
-        df['split']=pd.Categorical(['train']*len(df.index))
+        df['split']=pd.Categorical(['dev']*len(df.index))
         # print(df)
         # if split == "train":
         #     df = df[(df["split"] == split) | (df["split"] == f"{split}_covost")]
@@ -169,26 +169,26 @@ def process(args):
         df = pd.DataFrame.from_dict(manifest)
      
         df = filter_manifest_df(df, is_train_split=is_train_split)
-        save_df_to_tsv(df, root / f"{split}.tsv")
+        save_df_to_tsv(df, root / f"dev.tsv")
     # Generate vocab
-    vocab_size_str = "" if args.vocab_type == "char" else str(args.vocab_size)
-    spm_filename_prefix = f"spm_{args.vocab_type}{vocab_size_str}"
-    with NamedTemporaryFile(mode="w") as f:
-        for t in train_text:
-            f.write(t + "\n")
-        gen_vocab(
-            Path(f.name),
-            root / spm_filename_prefix,
-            args.vocab_type,
-            args.vocab_size
-        )
-    # Generate config YAML
-    gen_config_yaml(
-        root,
-        spm_filename=spm_filename_prefix + ".model",
-        yaml_filename=f"config.yaml",
-        specaugment_policy="lb",
-    )
+    # vocab_size_str = "" if args.vocab_type == "char" else str(args.vocab_size)
+    # spm_filename_prefix = f"spm_{args.vocab_type}{vocab_size_str}"
+    # with NamedTemporaryFile(mode="w") as f:
+    #     for t in train_text:
+    #         f.write(t + "\n")
+    #     gen_vocab(
+    #         Path(f.name),
+    #         root / spm_filename_prefix,
+    #         args.vocab_type,
+    #         args.vocab_size
+    #     )
+    # # Generate config YAML
+    # gen_config_yaml(
+    #     root,
+    #     spm_filename=spm_filename_prefix + ".model",
+    #     yaml_filename=f"config.yaml",
+    #     specaugment_policy="lb",
+    # )
     # Clean up
     shutil.rmtree(feature_root)
 

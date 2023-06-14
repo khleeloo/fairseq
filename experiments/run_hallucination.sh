@@ -32,52 +32,54 @@ export PYTHONPATH='/home/rmfrieske/fairseq/'
 
 CHECKPOINT_FILENAME=avg_last_10_checkpoint.pt
 # CHECKPOINT_FILENAME=librispeech_transformer_l.pt
-# if ! avg_last_10_checkpoint.pt; then
-# 	CHECKPOINT_FILENAME=avg_last_10_checkpoint.pt
-# 	python ${FAIRSEQ}/scripts/average_checkpoints.py --inputs ${SAVE_DIR} \
-#   	--num-epoch-checkpoints 10 \
-#   	--output "${SAVE_DIR}/${CHECKPOINT_FILENAME}"
-# fi
+if ! avg_last_10_checkpoint.pt; then
+	CHECKPOINT_FILENAME=avg_last_10_checkpoint.pt
+	python ${FAIRSEQ}/scripts/average_checkpoints.py --inputs ${SAVE_DIR} \
+  	--num-epoch-checkpoints 10 \
+  	--output "${SAVE_DIR}/${CHECKPOINT_FILENAME}"
+fi
 
-# SCORE=wer
-# for SUBSET in train ; do
-# python  ${FAIRSEQ}fairseq_cli/generate.py ${LS_ROOT}  --config-yaml config.yaml --gen-subset ${SUBSET} \
-#     --task speech_to_text --arch s2t_transformer_l --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME} \
-#     --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
-
-# grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
-# grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
-# done
-
-
-# SCORE=chrf
-# for SUBSET in dev-clean dev-other test-clean test-other; do
-#  python  ${FAIRSEQ}fairseq_cli/generate_hallucination.py ${LS_ROOT} ${HALL_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET} \
-#     --task speech_to_text_hallucination --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME}  --arch s2t_hallucination_transformer_s \
-#     --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
-
-# grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
-# grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
-# done
-
-
-# SCORE=wer
-# for SUBSET in dev-clean dev-other test-clean test-other; do
-#  python  ${FAIRSEQ}fairseq_cli/generate_hallucination.py ${LS_ROOT} ${HALL_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET}  \
-#     --task speech_to_text_hallucination --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME}  --arch s2t_hallucination_transformer_s   \
-#     --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
-
-# grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
-# grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
-# done
-#hall
-
-SCORE=hall
-for SUBSET in dev-clean dev-other test-clean test-other; do
- python  ${FAIRSEQ}fairseq_cli/generate_hallucination.py ${LS_ROOT} ${HALL_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET}  \
-    --task speech_to_text_hallucination --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME}  --arch s2t_hallucination_transformer_s   \
-    --max-tokens 50000 --beam 5 --scoring 'wer' --results-path ${SAVE_DIR}$SCORE 
+SCORE=bleu
+for SUBSET in dev-clean dev-other test-clean test-other ; do
+python  ${FAIRSEQ}fairseq_cli/generate.py ${LS_ROOT}  --config-yaml config.yaml --gen-subset ${SUBSET} \
+    --task speech_to_text --arch s2t_transformer_s --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME} \
+    --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
 
 grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
 grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
 done
+
+
+SCORE=chrf
+for SUBSET in dev-clean dev-other test-clean test-other ; do
+python  ${FAIRSEQ}fairseq_cli/generate.py ${LS_ROOT}  --config-yaml config.yaml --gen-subset ${SUBSET} \
+    --task speech_to_text --arch s2t_transformer_s --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME} \
+    --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
+
+grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
+grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
+done
+
+
+
+SCORE=wer
+for SUBSET in dev-clean dev-other test-clean test-other ; do
+python  ${FAIRSEQ}fairseq_cli/generate.py ${LS_ROOT}  --config-yaml config.yaml --gen-subset ${SUBSET} \
+    --task speech_to_text --arch s2t_transformer_s --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME} \
+    --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
+
+grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
+grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
+done
+
+#hall
+
+# SCORE=hall
+# for SUBSET in dev-clean dev-other test-clean test-other; do
+#  python  ${FAIRSEQ}fairseq_cli/generate_hallucination.py ${LS_ROOT} ${HALL_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET}  \
+#     --task speech_to_text_hallucination --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME}  --arch s2t_hallucination_transformer_s   \
+#     --max-tokens 50000 --beam 5 --scoring 'wer' --results-path ${SAVE_DIR}$SCORE 
+
+# grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
+# grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
+# done
