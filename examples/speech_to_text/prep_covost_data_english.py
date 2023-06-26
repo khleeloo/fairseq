@@ -54,8 +54,8 @@ class CoVoST(Dataset):
     # )
 
     # VERSIONS = {2}
-    root='/home/rmfrieske/datasets/covost/en/perturbed_2/'
-    SPLITS = [ "test" ]
+    root='/home/rmfrieske/datasets/covost/'
+    SPLITS = [ "train"]
 
 
 

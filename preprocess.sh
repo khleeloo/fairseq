@@ -2,6 +2,7 @@
 
 SCRIPT_PATH=/home/rmfrieske/fairseq/examples/speech_to_text
 # RELATIVE_PATH=examples/speech_to_text
+<<<<<<< HEAD
 LS_ROOT='/home/rmfrieske/datasets/covost/en/'
 # LS_ROOT='/home/rmfrieske/datasets'
 
@@ -12,4 +13,16 @@ python $SCRIPT_PATH/prep_covost_data_english.py \
 
 # python $SCRIPT_PATH/prep_librispeech_data.py \
 # --output-root ${LS_ROOT} --vocab-type unigram --vocab-size 10000
+=======
+# LS_ROOT='/home/rmfrieske/datasets/covost/'
+LS_ROOT='/home/rmfrieske/datasets'
+
+export PYTHONPATH='/home/rmfrieske/fairseq/'
+
+# python $SCRIPT_PATH/prep_covost_data_english.py \
+#   --data-root ${LS_ROOT} --vocab-type unigram --vocab-size 10000
+
+python $SCRIPT_PATH/prep_librispeech_data.py \
+--output-root ${LS_ROOT} --vocab-type unigram --vocab-size 10000
+>>>>>>> cd8858ae8b4ee4bd0c93ceac5cb5d340a95017ac
 
