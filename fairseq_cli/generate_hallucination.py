@@ -33,6 +33,7 @@ import lmppl
 # nltk.download('averaged_perceptron_tagger')  # Download POS tagger models
 # nltk.download('tagsets')  # Download tagset data
 # nltk.download('brown')  # Down
+# nltk.download('stopwords')
 # from nltk.corpus import brown
 # from nltk.util import pad_sequence
 # from nltk.util import bigrams
