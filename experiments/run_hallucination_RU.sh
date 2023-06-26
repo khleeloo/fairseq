@@ -1,6 +1,6 @@
 #!/bin/bash
 MODEL=RU_20
-EXPERIMENT='baseline'
+EXPERIMENT='perturbed_2'
 LS_ROOT=/home/rmfrieske/datasets/
 FAIRSEQ=/home/rmfrieske/fairseq/
 TENSOR_LOG=/home/rmfrieske/tensor_log/${MODEL}/${EXPERIMENT}/
@@ -13,20 +13,29 @@ CHECKPOINT_DIR=/home/rmfrieske/checkpoints/${MODEL}
 export PYTHONPATH='/home/rmfrieske/fairseq/'
 
 # #train from scratch
-python ${FAIRSEQ}fairseq_cli/train.py ${LS_ROOT} --save-dir ${SAVE_DIR} \
-  --config-yaml config.yaml --train-subset train-RU_20 --valid-subset dev-clean,dev-other \
-  --num-workers 4 --max-tokens 40000 --max-update 300000 \
-  --task speech_to_text --criterion label_smoothed_cross_entropy --label-smoothing 0.1 --report-accuracy \
-  --arch s2t_transformer_s --share-decoder-input-output-embed  \
-  --optimizer adam --lr 2e-3 --lr-scheduler inverse_sqrt --warmup-updates 10000 \
-  --clip-norm 10.0 --seed 1 --update-freq 8 --tensorboard-logdir ${TENSOR_LOG}
+# python ${FAIRSEQ}fairseq_cli/train.py ${LS_ROOT} --save-dir ${SAVE_DIR} \
+#   --config-yaml config.yaml --train-subset train-RU_20 --valid-subset dev-clean,dev-other \
+#   --num-workers 4 --max-tokens 40000 --max-update 300000 \
+#   --task speech_to_text --criterion label_smoothed_cross_entropy --label-smoothing 0.1 --report-accuracy \
+#   --arch s2t_transformer_s --share-decoder-input-output-embed  \
+#   --optimizer adam --lr 2e-3 --lr-scheduler inverse_sqrt --warmup-updates 10000 \
+#   --clip-norm 10.0 --seed 1 --update-freq 8 --tensorboard-logdir ${TENSOR_LOG}/${MODEL}
 
 #continue training
 # python ${FAIRSEQ}fairseq_cli/train.py ${LS_ROOT} --save-dir ${SAVE_DIR} \
 #   --config-yaml config.yaml --train-subset train-RU --valid-subset dev-clean,dev-other \
 #   --num-workers 4 --max-tokens 40000 --max-update 300000 \
 #   --task speech_to_text --criterion label_smoothed_cross_entropy --label-smoothing 0.1 --report-accuracy \
-#   --arch s2t_transformer_s --share-decoder-input-output-embed --restore-file ${SAVE_DIR}'checkpoint_last.pt' \
+#   --arch s2t_transformer_s --sha
+# SCORE=hall
+# for SUBSET in dev-clean dev-other test-clean test-other; do
+#  python  ${FAIRSEQ}fairseq_cli/generate_hallucination.py ${LS_ROOT} ${HALL_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET}  \
+#     --task speech_to_text_hallucination --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME} --arch s2t_hallucination_transformer_s   \
+#     --max-tokens 50000 --beam 5 --scoring wer --results-path ${SAVE_DIR}$SCORE 
+
+# grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
+# grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
+# donere-decoder-input-output-embed --restore-file ${SAVE_DIR}'checkpoint_last.pt' \
 #   --optimizer adam --lr 2e-3 --lr-scheduler inverse_sqrt --warmup-updates 10000 \
 #   --clip-norm 10.0 --seed 1 --update-freq 8 --tensorboard-logdir ${TENSOR_LOG}
 
@@ -43,12 +52,13 @@ CHECKPOINT_FILENAME=avg_last_10_checkpoint.pt
 # SCORE=wer
 # for SUBSET in dev-clean dev-other test-clean test-other; do
 #  python  ${FAIRSEQ}fairseq_cli/generate.py ${LS_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET} \
-#     --task speech_to_text --path ${SAVE_DIR}/${CHECKPOINT_FILENAME} \
+#     --task speech_to_text --path ${CHECKPOINT_DIR}/${CHECKPOINT_FILENAME} \
 #     --max-tokens 50000 --beam 5 --scoring $SCORE --results-path ${SAVE_DIR}$SCORE 
 
 # grep ^T ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f2- > ${SAVE_DIR}$SCORE/target-${SUBSET}.txt
 # grep ^D ${SAVE_DIR}$SCORE/generate-${SUBSET}.txt | cut -f3- > ${SAVE_DIR}$SCORE/hypotheses-${SUBSET}.txt
 # done
+
 # SCORE=bleu
 # for SUBSET in dev-clean dev-other test-clean test-other; do
 #  python  ${FAIRSEQ}fairseq_cli/generate.py ${LS_ROOT} --config-yaml config.yaml --gen-subset ${SUBSET} \

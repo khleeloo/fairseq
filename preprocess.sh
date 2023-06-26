@@ -2,7 +2,7 @@
 
 SCRIPT_PATH=/home/rmfrieske/fairseq/examples/speech_to_text
 # RELATIVE_PATH=examples/speech_to_text
-LS_ROOT='/home/rmfrieske/datasets/covost/en/perturbed_2/'
+LS_ROOT='/home/rmfrieske/datasets/covost/en/'
 # LS_ROOT='/home/rmfrieske/datasets'
 
 export PYTHONPATH='/home/rmfrieske/fairseq/'

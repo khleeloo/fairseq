@@ -54,8 +54,8 @@ class CoVoST(Dataset):
     # )
 
     # VERSIONS = {2}
-    root='/home/rmfrieske/datasets/covost/'
-    SPLITS = [ "train"]
+    root='/home/rmfrieske/datasets/covost/en/perturbed_2/'
+    SPLITS = [ "test" ]
 
 
 
@@ -68,10 +68,10 @@ class CoVoST(Dataset):
   
 
 
-        self.root = root
+        self.root: Path = Path(root)
 
-        cv_tsv_path = '/home/rmfrieske/datasets/covost/validated.tsv'
-        # assert cv_tsv_path.is_file()
+        cv_tsv_path = self.root / "combined.tsv"
+        assert cv_tsv_path.is_file()
 
         # Extract features
         # feature_root = out_root / "perturbed_fbank80"
@@ -81,8 +81,9 @@ class CoVoST(Dataset):
    
 
         df= load_df_from_tsv(cv_tsv_path)
+        # print(df)
  
-        df['split']=pd.Categorical(['train']*len(df.index))
+        # df['split']=pd.Categorical(['train']*len(df.index))
         # print(df)
         # if split == "train":
         #     df = df[(df["split"] == split) | (df["split"] == f"{split}_covost")]
@@ -91,7 +92,10 @@ class CoVoST(Dataset):
         data = df.to_dict(orient="index").items()
         data = [v for k, v in sorted(data, key=lambda x: x[0])]
         self.data = []
+        # print(len(data))
         for e in data:
+            
+                
             try:
                 path = self.root / "clips" / e["path"]
                 _ = torchaudio.info(path.as_posix())
@@ -115,8 +119,8 @@ class CoVoST(Dataset):
       
         path = self.root / "clips" / data["path"]
         waveform, sample_rate = torchaudio.load(path)
-        sentence = data["sentence"]
-        speaker_id = data["client_id"]
+        sentence = data["tgt_text"]
+        speaker_id = data["speaker"]
        
         _id = data["path"].replace(".mp3", "")
         return waveform, sample_rate, sentence, speaker_id, _id
@@ -153,44 +157,44 @@ def process(args):
     train_text = []
  
 
-    for split in CoVoST.SPLITS:
-        manifest = {c: [] for c in MANIFEST_COLUMNS}
-        dataset = CoVoST(root, split)
-        print(dataset)
-        for _, _, src_utt,speaker_id, utt_id in tqdm(dataset):
-            manifest["id"].append(utt_id)
-            manifest["audio"].append(audio_paths[utt_id])
-            manifest["n_frames"].append(audio_lengths[utt_id])
-            manifest["tgt_text"].append(src_utt )
-            manifest["speaker"].append(speaker_id)
-        is_train_split = split.startswith("train")
-        if is_train_split:
-            train_text.extend(manifest["tgt_text"])
-        df = pd.DataFrame.from_dict(manifest)
+    # for split in CoVoST.SPLITS:
+    #     manifest = {c: [] for c in MANIFEST_COLUMNS}
+    #     dataset = CoVoST(root, split)
+    #     print(dataset)
+    #     for _, _, src_utt,speaker_id, utt_id in tqdm(dataset):
+    #         manifest["id"].append(utt_id)
+    #         manifest["audio"].append(audio_paths[utt_id])
+    #         manifest["n_frames"].append(audio_lengths[utt_id])
+    #         manifest["tgt_text"].append(src_utt )
+    #         manifest["speaker"].append(speaker_id)
+    #     is_train_split = split.startswith("train")
+    #     if is_train_split:
+    #         train_text.extend(manifest["tgt_text"])
+    #     df = pd.DataFrame.from_dict(manifest)
      
-        df = filter_manifest_df(df, is_train_split=is_train_split)
-        save_df_to_tsv(df, root / f"{split}.tsv")
+    #     df = filter_manifest_df(df, is_train_split=is_train_split)
+    #     save_df_to_tsv(df, root / f"{split}.tsv")
     # Generate vocab
-    vocab_size_str = "" if args.vocab_type == "char" else str(args.vocab_size)
-    spm_filename_prefix = f"spm_{args.vocab_type}{vocab_size_str}"
-    with NamedTemporaryFile(mode="w") as f:
-        for t in train_text:
-            f.write(t + "\n")
-        gen_vocab(
-            Path(f.name),
-            root / spm_filename_prefix,
-            args.vocab_type,
-            args.vocab_size
-        )
-    # Generate config YAML
-    gen_config_yaml(
-        root,
-        spm_filename=spm_filename_prefix + ".model",
-        yaml_filename=f"config.yaml",
-        specaugment_policy="lb",
-    )
+    # vocab_size_str = "" if args.vocab_type == "char" else str(args.vocab_size)
+    # spm_filename_prefix = f"spm_{args.vocab_type}{vocab_size_str}"
+    # with NamedTemporaryFile(mode="w") as f:
+    #     for t in train_text:
+    #         f.write(t + "\n")
+    #     gen_vocab(
+    #         Path(f.name),
+    #         root / spm_filename_prefix,
+    #         args.vocab_type,
+    #         args.vocab_size
+    #     )
+    # # Generate config YAML
+    # gen_config_yaml(
+    #     root,
+    #     spm_filename=spm_filename_prefix + ".model",
+    #     yaml_filename=f"config.yaml",
+    #     specaugment_policy="lb",
+    # )
     # Clean up
-    shutil.rmtree(feature_root)
+    # shutil.rmtree(feature_root)
 
 
 def main():
